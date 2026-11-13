@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>CM field editor</title>
+  <style>
+    body { margin: 0; padding: 16px; background: light-dark(#f4f1ea, #141311); color: light-dark(#1c1915, #f3efe6); font-family: "Segoe UI", sans-serif; }
+  </style>
+</head>
+<body>
+<div id="cm-detail-studio-5">
+  <p class="c5-sr">Public and Management edit the detail page. Search is one page with three drop areas: Search for, Narrow with, and Show in the list. CM fields and Atlantis elements stay separate. Add field opens a dialog. The records and the code are illustrative.</p>
+  <div class="c5-app">
+    <header class="c5-top">
+      <label class="c5-label">Beschrijvingssoort
+        <select class="c5-input" id="c5-soort">
+          <option value="objecten">Objecten</option>
+          <option value="archiefstukken">Archiefstukken</option>
+        </select>
+      </label>
+      <label class="c5-label">Example record
+        <select class="c5-input" id="c5-record"></select>
+      </label>
+    </header>
+
+    <section class="c5-rail" aria-label="CM fields">
+      <div class="c5-rail-head">
+        <h2>CM fields</h2>
+        <button type="button" class="c5-ghost" id="c5-add-field" data-add-field="true">Add field</button>
+      </div>
+      <p class="c5-hint">On a detail tab, drop a field into the page or into a table cell. On Search, drop it where a searcher should use it.</p>
+      <div class="c5-chips" id="c5-fields"></div>
+    </section>
+
+    <section class="c5-elements" aria-label="Atlantis elements">
+      <div class="c5-rail-head">
+        <h2>Elements</h2>
+        <p class="c5-hint">Separate from CM fields. Set the attributes on the placed element. Nested content goes in the slots.</p>
+      </div>
+      <div class="c5-chips" id="c5-elements"></div>
+    </section>
+
+    <p class="c5-note" id="c5-note" hidden></p>
+
+    <div class="c5-tabs" role="tablist" aria-label="Where fields are used">
+      <button type="button" class="c5-tab" role="tab" id="c5-tab-public" aria-selected="true">Public</button>
+      <button type="button" class="c5-tab" role="tab" id="c5-tab-management" aria-selected="false">Management</button>
+      <button type="button" class="c5-tab" role="tab" id="c5-tab-search" aria-selected="false">Search</button>
+    </div>
+
+    <div class="c5-work">
+      <div class="c5-canvas-wrap">
+        <h3 id="c5-canvas-title">Public</h3>
+        <ol class="c5-canvas" id="c5-canvas" data-drop="root" aria-label="Composition"></ol>
+        <p class="c5-empty" id="c5-empty" hidden>Drag a CM field here.</p>
+      </div>
+      <section class="c5-stage" aria-label="Preview">
+        <h3 id="c5-stage-title">Public detail</h3>
+        <div class="c5-page" id="c5-page"></div>
+      </section>
+    </div>
+    <section class="c5-search" id="c5-search" hidden aria-label="Search page">
+      <p class="c5-hint">This is the search page. Drop a field where a searcher should use it.</p>
+      <div class="c5-search-page">
+        <div class="c5-zone" data-drop="zoek" aria-label="Search for">
+          <h3>Search for</h3>
+          <div class="c5-zone-row" id="c5-zoek"></div>
+        </div>
+        <div class="c5-search-body">
+          <div class="c5-zone" data-drop="filter" aria-label="Narrow with">
+            <h3>Narrow with</h3>
+            <div id="c5-filter"></div>
+          </div>
+          <div class="c5-zone" data-drop="resultaat" aria-label="Show in the list">
+            <div class="c5-zone-head">
+              <h3>Show in the list</h3>
+              <label class="c5-label" id="c5-sort-label">Sorted by
+                <select class="c5-mini" id="c5-sort"></select>
+              </label>
+            </div>
+            <div id="c5-resultaat"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="c5-modal" id="c5-modal" hidden>
+      <div class="c5-dialog" role="dialog" aria-modal="true" aria-labelledby="c5-dialog-title">
+        <h3 id="c5-dialog-title">Add CM field</h3>
+        <label class="c5-label">Name
+          <input class="c5-input" id="c5-field-name" maxlength="20" />
+        </label>
+        <label class="c5-label">Expression
+          <textarea class="c5-code" id="c5-code" rows="5" spellcheck="false"></textarea>
+        </label>
+        <p class="c5-error" id="c5-code-error" hidden></p>
+        <div class="c5-editor-actions">
+          <button type="button" class="c5-ghost" id="c5-close-code">Cancel</button>
+          <button type="button" class="c5-primary" id="c5-apply">Add field</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <style>
+    #cm-detail-studio-5 { color: light-dark(#1c1915, #f3efe6); font-family: "Segoe UI", sans-serif; font-size: 14px; line-height: 1.4; }
+    #cm-detail-studio-5 * { box-sizing: border-box; }
+    #cm-detail-studio-5 .c5-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    #cm-detail-studio-5 .c5-app { position: relative; background: light-dark(#f4f1ea, #1c1b19); border: 1px solid light-dark(#e4ddd0, #3a3834); border-radius: 10px; }
+    #cm-detail-studio-5 .c5-modal { position: absolute; inset: 0; z-index: 2; display: flex; align-items: flex-start; justify-content: center; padding: 28px 12px; background: light-dark(rgba(28, 25, 21, 0.4), rgba(0, 0, 0, 0.55)); }
+    #cm-detail-studio-5 .c5-modal[hidden] { display: none; }
+    #cm-detail-studio-5 .c5-dialog { width: min(440px, 100%); display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid light-dark(#e4ddd0, #3a3834); border-radius: 8px; background: light-dark(#fffcf7, #262522); }
+    #cm-detail-studio-5 .c5-top, #cm-detail-studio-5 .c5-rail-head, #cm-detail-studio-5 .c5-editor-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    #cm-detail-studio-5 .c5-top, #cm-detail-studio-5 .c5-rail, #cm-detail-studio-5 .c5-elements { padding: 12px 14px; }
+    #cm-detail-studio-5 .c5-top, #cm-detail-studio-5 .c5-rail { background: light-dark(#fffcf7, #262522); }
+    #cm-detail-studio-5 .c5-rail { border-top: 1px solid light-dark(#e4ddd0, #3a3834); }
+    #cm-detail-studio-5 .c5-elements { background: light-dark(#e7f0ef, #1a2626); border-top: 1px solid light-dark(#c9ddd9, #2c4544); }
+    #cm-detail-studio-5 h2, #cm-detail-studio-5 h3 { margin: 0; font-size: 16px; font-weight: 500; }
+    #cm-detail-studio-5 h3 { font-size: 14px; margin-bottom: 8px; }
+    #cm-detail-studio-5 .c5-hint, #cm-detail-studio-5 .c5-meta, #cm-detail-studio-5 .c5-path { margin: 0; color: light-dark(#5c564c, #b7b0a4); font-size: 12px; }
+    #cm-detail-studio-5 .c5-elements .c5-hint { color: light-dark(#245955, #c5e4e1); }
+    #cm-detail-studio-5 .c5-label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: light-dark(#5c564c, #b7b0a4); }
+    #cm-detail-studio-5 .c5-input, #cm-detail-studio-5 .c5-code, #cm-detail-studio-5 .c5-tab, #cm-detail-studio-5 .c5-chip, #cm-detail-studio-5 .c5-text-btn, #cm-detail-studio-5 .c5-atl-btn, #cm-detail-studio-5 .c5-primary, #cm-detail-studio-5 .c5-ghost, #cm-detail-studio-5 .c5-mini { font: inherit; color: inherit; }
+    #cm-detail-studio-5 .c5-input, #cm-detail-studio-5 .c5-code, #cm-detail-studio-5 .c5-mini { border: 1px solid light-dark(#d9d1c4, #4a4742); border-radius: 6px; background: light-dark(#fff, #1c1b19); color: inherit; }
+    #cm-detail-studio-5 .c5-input, #cm-detail-studio-5 .c5-mini { height: 32px; padding: 0 8px; }
+    #cm-detail-studio-5 .c5-code { width: 100%; padding: 8px; font-family: Consolas, monospace; font-size: 12px; }
+    #cm-detail-studio-5 .c5-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    #cm-detail-studio-5 .c5-chip { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 44px; padding: 6px 8px; border: 1px solid light-dark(#d9d1c4, #4a4742); border-radius: 6px; background: light-dark(#fff, #1c1b19); cursor: grab; }
+    #cm-detail-studio-5 .c5-chip button, #cm-detail-studio-5 .c5-block button, #cm-detail-studio-5 .c5-linkish { border: 0; background: transparent; color: light-dark(#0c4f4f, #d5f3f1); cursor: pointer; font: inherit; font-size: 12px; }
+    #cm-detail-studio-5 .c5-editor { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    #cm-detail-studio-5 .c5-error { margin: 0; color: light-dark(#8a2b2b, #f0b4b4); font-size: 12px; }
+    #cm-detail-studio-5 .c5-note { margin: 0; padding: 8px 14px; font-size: 12px; color: light-dark(#8a4b12, #e0b080); background: light-dark(#fffcf7, #262522); }
+    #cm-detail-studio-5 .c5-primary, #cm-detail-studio-5 .c5-ghost { height: 32px; padding: 0 12px; border-radius: 6px; cursor: pointer; }
+    #cm-detail-studio-5 .c5-primary { border: 0; background: light-dark(#0f6e6e, #1f8a88); color: #fff; }
+    #cm-detail-studio-5 .c5-ghost { border: 1px solid light-dark(#d9d1c4, #4a4742); background: transparent; }
+    #cm-detail-studio-5 .c5-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 14px 0; background: light-dark(#fffcf7, #262522); }
+    #cm-detail-studio-5 .c5-tab { height: 32px; padding: 0 10px; border: 1px solid transparent; border-bottom: 0; border-radius: 6px 6px 0 0; background: transparent; cursor: pointer; }
+    #cm-detail-studio-5 .c5-tab[aria-selected="true"] { background: light-dark(#f4f1ea, #1c1b19); border-color: light-dark(#e4ddd0, #3a3834); }
+    #cm-detail-studio-5 .c5-work { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); background: light-dark(#f4f1ea, #1c1b19); }
+    #cm-detail-studio-5 .c5-canvas-wrap, #cm-detail-studio-5 .c5-stage { padding: 12px; }
+    #cm-detail-studio-5 .c5-stage { border-left: 1px solid light-dark(#e4ddd0, #3a3834); }
+    #cm-detail-studio-5 .c5-canvas { list-style: none; margin: 0; padding: 0; min-height: 160px; display: flex; flex-direction: column; gap: 8px; }
+    #cm-detail-studio-5 .c5-over { outline: 1px dashed light-dark(#0f6e6e, #7ec8c4); outline-offset: 3px; }
+    #cm-detail-studio-5 .c5-block { padding: 8px; border: 1px solid light-dark(#e4ddd0, #3a3834); border-radius: 6px; background: light-dark(#fff, #1c1b19); }
+    #cm-detail-studio-5 .c5-block-head { display: flex; justify-content: space-between; gap: 8px; align-items: center; cursor: grab; }
+    #cm-detail-studio-5 .c5-attrs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    #cm-detail-studio-5 .c5-slot { margin-top: 8px; min-height: 36px; padding: 6px; border: 1px dashed light-dark(#c9ddd9, #2c4544); border-radius: 6px; }
+    #cm-detail-studio-5 table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    #cm-detail-studio-5 th, #cm-detail-studio-5 td { padding: 6px; border: 1px solid light-dark(#e4ddd0, #3a3834); text-align: left; vertical-align: top; font-weight: 400; }
+    #cm-detail-studio-5 .c5-page { border: 1px solid light-dark(#e4ddd0, #3a3834); border-radius: 8px; background: light-dark(#fff, #1c1b19); overflow: hidden; }
+    #cm-detail-studio-5 .c5-page table { margin: 0; }
+    #cm-detail-studio-5 .c5-page td, #cm-detail-studio-5 .c5-page th { border-color: light-dark(#e4ddd0, #3a3834); }
+    #cm-detail-studio-5 .c5-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; background: light-dark(#f7f4ee, #221f1c); border-bottom: 1px solid light-dark(#e4ddd0, #3a3834); }
+    #cm-detail-studio-5 .c5-text-btn { height: 26px; padding: 0 8px; border: 1px solid light-dark(#d9d1c4, #4a4742); border-radius: 6px; background: light-dark(#fff, #1c1b19); }
+    #cm-detail-studio-5 .c5-media { height: 48px; margin: 10px; border-radius: 6px; background: light-dark(#efeae1, #2c2926); display: flex; align-items: flex-end; padding: 8px; color: light-dark(#5c564c, #b7b0a4); font-size: 12px; }
+    #cm-detail-studio-5 .c5-detail { display: grid; grid-template-columns: minmax(0, 1fr) 88px; gap: 10px; padding: 10px; }
+    #cm-detail-studio-5 .c5-detail h4 { margin: 0 0 6px; font-size: 15px; font-weight: 500; }
+    #cm-detail-studio-5 .c5-slot-preview { display: flex; flex-direction: column; gap: 8px; }
+    #cm-detail-studio-5 .c5-line { margin: 0; }
+    #cm-detail-studio-5 .c5-atl-btn { align-self: flex-start; height: 28px; padding: 0 10px; border: 1px solid light-dark(#0f6e6e, #7ec8c4); border-radius: 6px; background: transparent; color: light-dark(#0c4f4f, #d5f3f1); }
+    #cm-detail-studio-5 .c5-place { padding: 8px; border-radius: 6px; background: light-dark(#f7f4ee, #221f1c); font-size: 12px; }
+    #cm-detail-studio-5 .c5-form, #cm-detail-studio-5 .c5-filters { display: flex; flex-direction: column; gap: 8px; padding: 10px; }
+    #cm-detail-studio-5 .c5-query { height: 28px; width: 100%; box-sizing: border-box; border: 1px solid light-dark(#d9d1c4, #4a4742); border-radius: 6px; background: light-dark(#fff, #1c1b19); color: inherit; }
+    #cm-detail-studio-5 .c5-search { padding: 12px; }
+    #cm-detail-studio-5 .c5-search-page { border: 1px solid light-dark(#e4ddd0, #3a3834); border-radius: 8px; background: light-dark(#fff, #1c1b19); }
+    #cm-detail-studio-5 .c5-search-body { display: grid; grid-template-columns: minmax(140px, 200px) minmax(0, 1fr); }
+    #cm-detail-studio-5 .c5-zone { padding: 10px; min-height: 88px; }
+    #cm-detail-studio-5 .c5-search-body .c5-zone:first-child { border-right: 1px solid light-dark(#e4ddd0, #3a3834); }
+    #cm-detail-studio-5 .c5-zone-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    #cm-detail-studio-5 .c5-zone-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    #cm-detail-studio-5 .c5-zone-head h3 { margin: 0; }
+    #cm-detail-studio-5 .c5-facet { margin: 0 0 10px; }
+    #cm-detail-studio-5 .c5-facet ul { margin: 4px 0 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    #cm-detail-studio-5 .c5-facet button[aria-pressed="true"] { border-color: light-dark(#0f6e6e, #7ec8c4); color: light-dark(#0c4f4f, #d5f3f1); }
+    #cm-detail-studio-5 .c5-zoek-field { min-width: 160px; }
+    #cm-detail-studio-5 #c5-resultaat table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    #cm-detail-studio-5 #c5-resultaat th, #cm-detail-studio-5 #c5-resultaat td { text-align: left; padding: 6px 4px; border-bottom: 1px solid light-dark(#e4ddd0, #3a3834); }
+    @media (max-width: 700px) {
+      #cm-detail-studio-5 .c5-search-body { grid-template-columns: 1fr; }
+      #cm-detail-studio-5 .c5-search-body .c5-zone:first-child { border-right: 0; border-bottom: 1px solid light-dark(#e4ddd0, #3a3834); }
+    }
+    @media (max-width: 700px) {
+      #cm-detail-studio-5 .c5-top, #cm-detail-studio-5 .c5-rail-head { flex-wrap: wrap; }
+      #cm-detail-studio-5 .c5-work { grid-template-columns: 1fr; }
+      #cm-detail-studio-5 .c5-stage { border-left: 0; border-top: 1px solid light-dark(#e4ddd0, #3a3834); }
+      #cm-detail-studio-5 .c5-detail { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script>
+    (function () {
+      var root = document.getElementById("cm-detail-studio-5");
+      var elementCatalog = [
+        { kind: "button", name: "Button", tag: "atl-button", note: "Registered. Attribute: href. Label is nested content." },
+        { kind: "table", name: "Table", tag: "table", note: "Container. Attribute: columns. Drop fields or a button into cells." }
+      ];
+      var tabs = ["public", "management", "search"];
+      var detailTabs = { public: true, management: true };
+      var tabTitle = { public: "Public", management: "Management", search: "Search" };
+
+      function xslt(column) { return '<xsl:value-of select="DATABASE/XMLDOCUMENT/' + column + '"/>'; }
+      function defField(key, name, column, valueKind) { return { key: key, name: name, code: xslt(column), valueKind: valueKind || "text" }; }
+      var soorten = {
+        objecten: {
+          records: {
+            portret: { title: "Portret van een vrouw", maker: "Frans Hals", date: "1642", description: "Oil on canvas.", place: "Haarlem", extent: "", files: "3 files", page: "Page 12 of 240", result: "Search result 12 of 240" },
+            brief: { title: "Brief aan de stad", maker: "Stad Haarlem", date: "1712", description: "Incoming letter.", place: "Haarlem", extent: "", files: "1 file", page: "Page 4 of 240", result: "Search result 4 of 240" }
+          },
+          recordOrder: ["portret", "brief"],
+          fields: [defField("title", "Titel", "FRM_OBJECTEN/TITEL"), defField("maker", "Vervaardiger", "FRM_OBJECTEN/VERVAARDIGER"), defField("date", "Datering", "FRM_OBJECTEN/DATERING", "date"), defField("description", "Beschrijving", "FRM_OBJECTEN/BESCHRIJVING")]
+        },
+        archiefstukken: {
+          records: {
+            charter: { title: "Charter van 1498", maker: "", date: "1498", description: "", place: "Haarlem", extent: "1 charter", files: "1 file", page: "Page 2 of 80", result: "Search result 2 of 80" },
+            rekening: { title: "Rekening van 1502", maker: "", date: "1502", description: "", place: "Haarlem", extent: "12 pages", files: "1 file", page: "Page 3 of 80", result: "Search result 3 of 80" }
+          },
+          recordOrder: ["charter", "rekening"],
+          fields: [defField("title", "Titel", "FRM_ARCHIEFSTUKKEN/TITEL"), defField("date", "Datering", "FRM_ARCHIEFSTUKKEN/DATERING", "date"), defField("extent", "Omvang", "FRM_ARCHIEFSTUKKEN/OMVANG")]
+        }
+      };
+      var state = { soort: "objecten", record: "portret", tab: "public", popup: "", nextId: 1, lists: { objecten: emptyLists(), archiefstukken: emptyLists() } };
+      function emptyLists() { return { public: [], management: [], zoek: [], resultaat: [], filter: [], sortKey: "date", queries: {}, picks: {} }; }
+      function makeField(key) { return { id: state.nextId++, kind: "field", key: key }; }
+      function makeButton() { return { id: state.nextId++, kind: "button", href: "/request", label: "Request a copy", children: [] }; }
+      function makeTable() { return { id: state.nextId++, kind: "table", columns: 2, rows: [[null, null]] }; }
+      function pushField(soort, tab, key) { state.lists[soort][tab].push(makeField(key)); }
+
+      pushField("objecten", "public", "title");
+      var objectTable = makeTable();
+      objectTable.rows[0][0] = makeField("maker");
+      objectTable.rows[0][1] = makeField("date");
+      state.lists.objecten.public.push(objectTable);
+      state.lists.objecten.public.push(makeButton());
+      pushField("objecten", "management", "title");
+      pushField("objecten", "management", "maker");
+      pushField("objecten", "management", "date");
+      pushField("objecten", "zoek", "title");
+      pushField("objecten", "zoek", "maker");
+      pushField("objecten", "resultaat", "title");
+      pushField("objecten", "resultaat", "date");
+      pushField("objecten", "filter", "maker");
+      pushField("archiefstukken", "public", "title");
+      var archiveTable = makeTable();
+      archiveTable.rows[0][0] = makeField("date");
+      archiveTable.rows[0][1] = makeField("extent");
+      state.lists.archiefstukken.public.push(archiveTable);
+      pushField("archiefstukken", "management", "title");
+      pushField("archiefstukken", "management", "extent");
+      pushField("archiefstukken", "zoek", "title");
+      pushField("archiefstukken", "resultaat", "title");
+      pushField("archiefstukken", "resultaat", "date");
+      pushField("archiefstukken", "filter", "extent");
+
+      function openPopup(mode) {
+        state.popup = mode;
+        var adding = mode === "add";
+        var field = adding ? null : fieldByKey(mode);
+        var table = state.soort === "archiefstukken" ? "FRM_ARCHIEFSTUKKEN" : "FRM_OBJECTEN";
+        root.querySelector("#c5-modal").hidden = false;
+        root.querySelector("#c5-dialog-title").textContent = adding ? "Add CM field" : "Edit expression";
+        root.querySelector("#c5-apply").textContent = adding ? "Add field" : "Apply code";
+        var name = root.querySelector("#c5-field-name");
+        name.disabled = !adding;
+        name.value = field ? field.name : "";
+        root.querySelector("#c5-code").value = field ? field.code : '<xsl:value-of select="DATABASE/XMLDOCUMENT/' + table + '/"/>';
+        root.querySelector("#c5-code-error").hidden = true;
+        (adding ? name : root.querySelector("#c5-code")).focus();
+      }
+      function closePopup() {
+        state.popup = "";
+        root.querySelector("#c5-modal").hidden = true;
+      }
+      function current() { return soorten[state.soort]; }
+      function list() { return state.lists[state.soort][state.tab]; }
+      function fieldByKey(key) { return current().fields.filter(function (item) { return item.key === key; })[0]; }
+      function pathOf(code) { var match = /select="([^"]+)"/.exec(code || ""); return match ? match[1] : "Expression"; }
+      function record() { return current().records[state.record]; }
+      function note(text) { var node = root.querySelector("#c5-note"); node.hidden = !text; node.textContent = text || ""; }
+      function el(tag, className, text) { var node = document.createElement(tag); if (className) node.className = className; if (text) node.textContent = text; return node; }
+      function isDetail() { return !!detailTabs[state.tab]; }
+
+      function eachNode(items, visit) {
+        items.forEach(function (item) {
+          visit(item);
+          if (item.kind === "button") eachNode(item.children, visit);
+          if (item.kind === "table") item.rows.forEach(function (row) { row.forEach(function (cell) { if (cell) { visit(cell); if (cell.kind === "button") eachNode(cell.children, visit); } }); });
+        });
+      }
+      function findNode(id) {
+        var found = null;
+        eachNode(list(), function (item) { if (item.id === id) found = item; });
+        return found;
+      }
+      function extract(id) {
+        function fromItems(items) {
+          for (var i = 0; i < items.length; i++) {
+            if (items[i].id === id) return items.splice(i, 1)[0];
+            if (items[i].kind === "button") { var inner = fromItems(items[i].children); if (inner) return inner; }
+            if (items[i].kind === "table") {
+              for (var r = 0; r < items[i].rows.length; r++) {
+                for (var c = 0; c < items[i].rows[r].length; c++) {
+                  var cell = items[i].rows[r][c];
+                  if (cell && cell.id === id) { items[i].rows[r][c] = null; return cell; }
+                  if (cell && cell.kind === "button") { var nested = fromItems(cell.children); if (nested) return nested; }
+                }
+              }
+            }
+          }
+          return null;
+        }
+        return fromItems(list());
+      }
+      function contains(node, id) {
+        if (!node || node.id === id) return node && node.id === id;
+        if (node.kind === "button") return node.children.some(function (child) { return contains(child, id); });
+        if (node.kind === "table") return node.rows.some(function (row) { return row.some(function (cell) { return contains(cell, id); }); });
+        return false;
+      }
+      function rootHasField(key) { return list().some(function (item) { return item.kind === "field" && item.key === key; }); }
+
+      function canPlace(slot, node) {
+        if (slot.drop === "root") {
+          if (!isDetail() && node.kind !== "field") return "Elements go on Public or Management.";
+          if (node.kind === "field" && rootHasField(node.key) && slot.movingId !== node.id) return fieldByKey(node.key).name + " is already on " + tabTitle[state.tab] + ".";
+          return "";
+        }
+        if (!isDetail()) return "Nesting is on the detail tabs.";
+        if (slot.drop === "button") {
+          if (node.kind !== "field") return "A button label takes a CM field.";
+          var button = findNode(slot.id);
+          if (button && button.children.length && button.children[0].id !== node.id) return "This button already has a label field. Remove it first.";
+          return "";
+        }
+        if (node.kind === "table") return "A table stays on the composition, outside other elements.";
+        var table = findNode(slot.id);
+        if (!table) return "";
+        var occupied = table.rows[slot.row][slot.col];
+        if (occupied && occupied.id !== node.id) return "This cell is filled. Remove what is there first.";
+        if (node.kind === "button" && contains(node, slot.id)) return "That element cannot go inside itself.";
+        return "";
+      }
+
+      function place(slot, node) {
+        if (slot.drop === "root") {
+          var index = slot.index;
+          if (typeof index !== "number" || index < 0) index = list().length;
+          list().splice(index, 0, node);
+          return;
+        }
+        if (slot.drop === "button") findNode(slot.id).children = [node];
+        if (slot.drop === "cell") findNode(slot.id).rows[slot.row][slot.col] = node;
+      }
+
+      function paintFields() {
+        var host = root.querySelector("#c5-fields");
+        host.textContent = "";
+        current().fields.forEach(function (item) {
+          var chip = el("div", "c5-chip");
+          chip.draggable = true;
+          chip.dataset.template = "field";
+          chip.dataset.key = item.key;
+          chip.appendChild(el("span", "", item.name));
+          var code = el("button", "", "Code");
+          code.type = "button";
+          code.dataset.code = item.key;
+          chip.appendChild(code);
+          host.appendChild(chip);
+        });
+      }
+      function paintElements() {
+        var host = root.querySelector("#c5-elements");
+        host.textContent = "";
+        elementCatalog.forEach(function (item) {
+          var chip = el("div", "c5-chip");
+          chip.draggable = true;
+          chip.dataset.template = item.kind;
+          chip.appendChild(el("strong", "", item.name));
+          chip.appendChild(el("small", "c5-path", item.note));
+          host.appendChild(chip);
+        });
+      }
+      function fieldBody(item) {
+        var source = fieldByKey(item.key);
+        var body = el("div", "");
+        body.appendChild(el("div", "", source.name));
+        body.appendChild(el("div", "c5-path", pathOf(source.code)));
+        return body;
+      }
+      function head(item, title) {
+        var row = el("div", "c5-block-head");
+        row.appendChild(el("strong", "", title));
+        var remove = el("button", "", "Remove");
+        remove.type = "button";
+        remove.dataset.remove = String(item.id);
+        row.appendChild(remove);
+        return row;
+      }
+      function paintNode(item) {
+        var box = el("li", "c5-block");
+        box.dataset.id = String(item.id);
+        if (item.kind === "field") {
+          box.draggable = true;
+          var row = el("div", "c5-block-head");
+          row.appendChild(fieldBody(item));
+          var remove = el("button", "", "Remove");
+          remove.type = "button";
+          remove.dataset.remove = String(item.id);
+          row.appendChild(remove);
+          box.appendChild(row);
+          return box;
+        }
+        if (item.kind === "button") {
+          box.appendChild(head(item, "Button"));
+          var attrs = el("div", "c5-attrs");
+          var href = el("label", "c5-label", "href");
+          var hrefInput = el("input", "c5-mini");
+          hrefInput.value = item.href;
+          hrefInput.dataset.attr = "href";
+          hrefInput.dataset.id = String(item.id);
+          href.appendChild(hrefInput);
+          var label = el("label", "c5-label", "Label");
+          var labelInput = el("input", "c5-mini");
+          labelInput.value = item.label;
+          labelInput.dataset.attr = "label";
+          labelInput.dataset.id = String(item.id);
+          labelInput.disabled = item.children.length > 0;
+          label.appendChild(labelInput);
+          attrs.appendChild(href);
+          attrs.appendChild(label);
+          box.appendChild(attrs);
+          var slot = el("div", "c5-slot");
+          slot.dataset.drop = "button";
+          slot.dataset.id = String(item.id);
+          if (item.children.length) slot.appendChild(paintNode(item.children[0]));
+          else slot.appendChild(el("p", "c5-hint", "Drop a CM field to use it as the label."));
+          box.appendChild(slot);
+          return box;
+        }
+        box.appendChild(head(item, "Table"));
+        var attrs = el("div", "c5-attrs");
+        var columns = el("label", "c5-label", "columns");
+        var select = el("select", "c5-mini");
+        select.dataset.attr = "columns";
+        select.dataset.id = String(item.id);
+        [2, 3].forEach(function (count) {
+          var option = el("option", "", String(count));
+          option.value = String(count);
+          if (count === item.columns) option.selected = true;
+          select.appendChild(option);
+        });
+        columns.appendChild(select);
+        var add = el("button", "c5-linkish", "Add row");
+        add.type = "button";
+        add.dataset.addRow = String(item.id);
+        attrs.appendChild(columns);
+        attrs.appendChild(add);
+        box.appendChild(attrs);
+        var table = document.createElement("table");
+        item.rows.forEach(function (row, r) {
+          var tr = document.createElement("tr");
+          row.forEach(function (cell, c) {
+            var td = document.createElement("td");
+            td.dataset.drop = "cell";
+            td.dataset.id = String(item.id);
+            td.dataset.row = String(r);
+            td.dataset.col = String(c);
+            if (cell) td.appendChild(paintNode(cell));
+            else td.appendChild(el("p", "c5-hint", "Drop a field"));
+            tr.appendChild(td);
+          });
+          table.appendChild(tr);
+        });
+        box.appendChild(table);
+        return box;
+      }
+
+      function renderPreviewNode(parent, item, rec) {
+        if (!item) return;
+        if (item.kind === "field") {
+          var source = fieldByKey(item.key);
+          parent.appendChild(el("p", "c5-line", source.name + "  " + (rec[item.key] || "")));
+          parent.appendChild(el("p", "c5-path", pathOf(source.code)));
+          return;
+        }
+        if (item.kind === "button") {
+          var text = item.label || "Request a copy";
+          if (item.children[0] && item.children[0].kind === "field") text = rec[item.children[0].key] || fieldByKey(item.children[0].key).name;
+          parent.appendChild(el("span", "c5-atl-btn", text));
+          parent.appendChild(el("p", "c5-path", "href " + (item.href || "")));
+          return;
+        }
+        var table = document.createElement("table");
+        item.rows.forEach(function (row) {
+          var tr = document.createElement("tr");
+          row.forEach(function (cell) {
+            var td = document.createElement("td");
+            if (cell) renderPreviewNode(td, cell, rec);
+            tr.appendChild(td);
+          });
+          table.appendChild(tr);
+        });
+        parent.appendChild(table);
+      }
+      function actions(bar, labels) {
+        var wrap = el("div", "c5-chips");
+        labels.forEach(function (label) { wrap.appendChild(el("span", "c5-text-btn", label)); });
+        bar.appendChild(wrap);
+      }
+      function detailPage(page, rec, audience, actionLabels) {
+        var bar = el("div", "c5-bar");
+        bar.appendChild(el("strong", "", rec.title));
+        actions(bar, actionLabels);
+        page.appendChild(bar);
+        page.appendChild(el("div", "c5-media", "Media · " + rec.files));
+        if (audience === "management") page.appendChild(el("div", "c5-bar", rec.page));
+        var detail = el("div", "c5-detail");
+        var main = el("div", "");
+        main.appendChild(el("h4", "", rec.title));
+        var slot = el("div", "c5-slot-preview");
+        var items = state.lists[state.soort][audience];
+        if (!items.length) slot.appendChild(el("p", "c5-hint", "The detail slot is empty."));
+        items.forEach(function (item) { renderPreviewNode(slot, item, rec); });
+        main.appendChild(slot);
+        detail.appendChild(main);
+        detail.appendChild(el("div", "c5-place", "Location " + rec.place));
+        page.appendChild(detail);
+        if (audience === "management") page.appendChild(el("div", "c5-bar", rec.result));
+      }
+      function searchPage(page) {
+        var form = el("div", "c5-form");
+        var fields = list().filter(function (item) { return item.kind === "field"; });
+        if (!fields.length) form.appendChild(el("p", "c5-hint", "No zoekvelden yet."));
+        fields.forEach(function (item) {
+          var source = fieldByKey(item.key);
+          var label = el("label", "c5-label", source.name);
+          label.appendChild(el("span", "c5-query", ""));
+          label.appendChild(el("span", "c5-path", pathOf(source.code)));
+          form.appendChild(label);
+        });
+        page.appendChild(form);
+      }
+      function resultPage(page, rec) {
+        var fields = list().filter(function (item) { return item.kind === "field"; });
+        if (!fields.length) { page.appendChild(el("p", "c5-hint", "No resultaatvelden yet.")); return; }
+        var table = document.createElement("table");
+        var head = document.createElement("tr");
+        var row = document.createElement("tr");
+        fields.forEach(function (item) {
+          head.appendChild(el("th", "", fieldByKey(item.key).name));
+          row.appendChild(el("td", "", rec[item.key] || ""));
+        });
+        table.appendChild(head);
+        table.appendChild(row);
+        page.appendChild(table);
+      }
+      function filterPage(page, rec) {
+        var form = el("div", "c5-filters");
+        var fields = list().filter(function (item) { return item.kind === "field"; });
+        if (!fields.length) form.appendChild(el("p", "c5-hint", "No filtervelden yet."));
+        fields.forEach(function (item) {
+          var source = fieldByKey(item.key);
+          form.appendChild(el("strong", "", source.name));
+          form.appendChild(el("span", "", rec[item.key] || ""));
+          form.appendChild(el("span", "c5-path", pathOf(source.code)));
+        });
+        page.appendChild(form);
+      }
+
+      function paintCanvas() {
+        var canvas = root.querySelector("#c5-canvas");
+        canvas.textContent = "";
+        list().forEach(function (item) { canvas.appendChild(paintNode(item)); });
+        root.querySelector("#c5-empty").hidden = list().length > 0;
+        root.querySelector("#c5-canvas-title").textContent = tabTitle[state.tab];
+      }
+      function paintPage() {
+        tabs.forEach(function (name) { root.querySelector("#c5-tab-" + name).setAttribute("aria-selected", state.tab === name ? "true" : "false"); });
+        var stageName = state.tab === "management" ? "Management detail" : "Public detail";
+        root.querySelector("#c5-stage-title").textContent = stageName;
+        var page = root.querySelector("#c5-page");
+        var rec = record();
+        page.textContent = "";
+        page.setAttribute("aria-label", stageName + " for " + rec.title);
+        if (state.tab === "public") detailPage(page, rec, "public", ["Request", "Download"]);
+        else if (state.tab === "management") detailPage(page, rec, "management", ["Edit", "Relations", "Delete"]);
+      }
+      function paintRecordOptions() {
+        var select = root.querySelector("#c5-record");
+        select.textContent = "";
+        current().recordOrder.forEach(function (key) {
+          var option = el("option", "", current().records[key].title);
+          option.value = key;
+          select.appendChild(option);
+        });
+        if (!current().records[state.record]) state.record = current().recordOrder[0];
+        select.value = state.record;
+      }
+      function matchingHits(pack) {
+        return current().recordOrder.map(function (key) { return current().records[key]; }).filter(function (hit) {
+          var boxes = pack.zoek.every(function (item) {
+            var query = (pack.queries[item.key] || "").trim().toLowerCase();
+            return !query || String(hit[item.key] || "").toLowerCase().indexOf(query) >= 0;
+          });
+          var facets = pack.filter.every(function (item) {
+            return !pack.picks[item.key] || hit[item.key] === pack.picks[item.key];
+          });
+          return boxes && facets;
+        });
+      }
+      function paintSearch() {
+        var pack = state.lists[state.soort];
+        var hits = current().recordOrder.map(function (key) { return current().records[key]; });
+        function removeButton(item, zone) {
+          var button = el("button", "c5-text-btn", "Remove");
+          button.type = "button";
+          button.dataset.searchRemove = String(item.id);
+          button.dataset.zone = zone;
+          return button;
+        }
+        var zoek = root.querySelector("#c5-zoek");
+        zoek.textContent = "";
+        if (!pack.zoek.length) zoek.appendChild(el("p", "c5-hint", "Drop a field to give it a search box."));
+        pack.zoek.forEach(function (item) {
+          var source = fieldByKey(item.key);
+          var box = el("div", "c5-zoek-field");
+          var label = el("label", "c5-label", source.name);
+          var input = document.createElement("input");
+          input.className = "c5-query";
+          input.type = "search";
+          input.value = pack.queries[item.key] || "";
+          input.dataset.query = item.key;
+          input.setAttribute("aria-label", source.name);
+          label.appendChild(input);
+          var head = el("div", "c5-zone-head");
+          head.appendChild(label);
+          head.appendChild(removeButton(item, "zoek"));
+          box.appendChild(head);
+          zoek.appendChild(box);
+        });
+        var filter = root.querySelector("#c5-filter");
+        filter.textContent = "";
+        if (!pack.filter.length) filter.appendChild(el("p", "c5-hint", "Drop a text field to narrow the list."));
+        pack.filter.forEach(function (item) {
+          var source = fieldByKey(item.key);
+          var facet = el("div", "c5-facet");
+          var title = el("div", "c5-zone-head");
+          title.appendChild(el("strong", "", source.name));
+          title.appendChild(removeButton(item, "filter"));
+          facet.appendChild(title);
+          var values = el("ul", "");
+          var seen = {};
+          hits.forEach(function (hit) {
+            var value = hit[item.key];
+            if (!value || seen[value]) return;
+            seen[value] = true;
+            var pick = el("button", "c5-text-btn", value);
+            pick.type = "button";
+            pick.dataset.pick = item.key;
+            pick.dataset.value = value;
+            if (pack.picks[item.key] === value) pick.setAttribute("aria-pressed", "true");
+            var row = document.createElement("li");
+            row.appendChild(pick);
+            values.appendChild(row);
+          });
+          facet.appendChild(values);
+          filter.appendChild(facet);
+        });
+        var columns = pack.resultaat;
+        var sort = root.querySelector("#c5-sort");
+        var sortLabel = root.querySelector("#c5-sort-label");
+        sort.textContent = "";
+        if (!columns.some(function (item) { return item.key === pack.sortKey; })) pack.sortKey = columns[0] ? columns[0].key : "";
+        sortLabel.hidden = !columns.length;
+        columns.forEach(function (item) {
+          var option = el("option", "", fieldByKey(item.key).name);
+          option.value = item.key;
+          if (item.key === pack.sortKey) option.selected = true;
+          sort.appendChild(option);
+        });
+        paintHits();
+      }
+      function paintHits() {
+        var pack = state.lists[state.soort];
+        var columns = pack.resultaat;
+        var result = root.querySelector("#c5-resultaat");
+        result.textContent = "";
+        if (!columns.length) {
+          result.appendChild(el("p", "c5-hint", "Drop a field to add a column."));
+          return;
+        }
+        var ordered = matchingHits(pack).slice().sort(function (a, b) {
+          return String(a[pack.sortKey] || "").localeCompare(String(b[pack.sortKey] || ""));
+        });
+        result.appendChild(el("p", "c5-hint", ordered.length + (ordered.length === 1 ? " record" : " records")));
+        var table = document.createElement("table");
+        var head = document.createElement("tr");
+        columns.forEach(function (item) {
+          var cell = document.createElement("th");
+          var wrap = el("div", "c5-zone-head");
+          wrap.appendChild(el("span", "", fieldByKey(item.key).name));
+          var button = el("button", "c5-text-btn", "Remove");
+          button.type = "button";
+          button.dataset.searchRemove = String(item.id);
+          button.dataset.zone = "resultaat";
+          wrap.appendChild(button);
+          cell.appendChild(wrap);
+          head.appendChild(cell);
+        });
+        table.appendChild(head);
+        ordered.forEach(function (hit) {
+          var row = document.createElement("tr");
+          columns.forEach(function (item) { row.appendChild(el("td", "", hit[item.key] || "")); });
+          table.appendChild(row);
+        });
+        result.appendChild(table);
+      }
+      function render() {
+        paintRecordOptions();
+        paintFields();
+        paintElements();
+        var searching = state.tab === "search";
+        root.querySelector(".c5-work").hidden = searching;
+        root.querySelector("#c5-search").hidden = !searching;
+        tabs.forEach(function (name) {
+          root.querySelector("#c5-tab-" + name).setAttribute("aria-selected", state.tab === name ? "true" : "false");
+        });
+        if (searching) paintSearch();
+        else { paintCanvas(); paintPage(); }
+      }
+
+      function createTemplate(template, key) {
+        if (template === "field") return makeField(key);
+        if (template === "button") return makeButton();
+        return makeTable();
+      }
+      function slotFrom(target) {
+        var nested = target.closest("[data-drop]");
+        if (!nested) return null;
+        return { drop: nested.dataset.drop, id: Number(nested.dataset.id), row: Number(nested.dataset.row), col: Number(nested.dataset.col), index: indexBefore(target) };
+      }
+      function indexBefore(target) {
+        var block = target.closest(".c5-canvas > .c5-block");
+        if (!block) return list().length;
+        var index = list().findIndex(function (item) { return String(item.id) === block.dataset.id; });
+        return index < 0 ? list().length : index;
+      }
+
+      root.querySelector("#c5-soort").addEventListener("change", function (event) {
+        state.soort = event.target.value;
+        state.record = current().recordOrder[0];
+        closePopup();
+        note("");
+        render();
+      });
+      root.querySelector("#c5-record").addEventListener("change", function (event) {
+        state.record = event.target.value;
+        if (state.tab === "search") paintSearch();
+        else paintPage();
+      });
+      tabs.forEach(function (name) {
+        root.querySelector("#c5-tab-" + name).addEventListener("click", function () { state.tab = name; note(""); render(); });
+      });
+      root.querySelector("#c5-apply").addEventListener("click", function () {
+        var nameInput = root.querySelector("#c5-field-name");
+        var code = root.querySelector("#c5-code").value.trim();
+        var error = root.querySelector("#c5-code-error");
+        var name = nameInput.value.trim();
+        function fail(message) { error.hidden = false; error.textContent = message; }
+        if (!code) { fail("Enter the expression."); return; }
+        if (state.popup === "add") {
+          if (!name) { fail("Enter a name."); return; }
+          if (name.length > 20) { fail("Use at most 20 characters."); return; }
+          if (/^\d/.test(name)) { fail("The name cannot start with a digit."); return; }
+          if (!/^[A-Za-z0-9$_ ]+$/.test(name)) { fail("Use letters, numbers, and spaces."); return; }
+          var key = name.toLowerCase().replace(/ /g, "");
+          if (current().fields.some(function (item) { return item.key === key || item.name.toLowerCase() === name.toLowerCase(); })) {
+            fail("That field already exists on this beschrijvingssoort.");
+            return;
+          }
+          current().fields.push({ key: key, name: name, code: code });
+          note(name + " is ready to drag.");
+        } else {
+          var open = fieldByKey(state.popup);
+          if (!open) return;
+          open.code = code;
+          note(open.name + " now uses this expression everywhere it is placed.");
+        }
+        error.hidden = true;
+        closePopup();
+        render();
+      });
+      root.querySelector("#c5-close-code").addEventListener("click", closePopup);
+      root.querySelector("#c5-modal").addEventListener("click", function (event) {
+        if (event.target.id === "c5-modal") closePopup();
+      });
+      root.querySelector("#c5-sort").addEventListener("change", function (event) {
+        state.lists[state.soort].sortKey = event.target.value;
+        paintHits();
+      });
+      root.addEventListener("input", function (event) {
+        if (event.target.id === "c5-code" || event.target.id === "c5-field-name") root.querySelector("#c5-code-error").hidden = true;
+        var box = event.target.closest("[data-query]");
+        if (!box || state.tab !== "search") return;
+        state.lists[state.soort].queries[box.dataset.query] = box.value;
+        paintHits();
+      });
+      root.querySelector("#c5-field-name").addEventListener("input", function () { root.querySelector("#c5-code-error").hidden = true; });
+      root.addEventListener("input", function (event) {
+        var input = event.target.closest("[data-attr]");
+        if (!input || input.dataset.attr === "columns") return;
+        var node = findNode(Number(input.dataset.id));
+        if (!node) return;
+        node[input.dataset.attr] = input.value;
+        paintPage();
+      });
+      root.addEventListener("change", function (event) {
+        var select = event.target.closest("[data-attr='columns']");
+        if (!select) return;
+        var table = findNode(Number(select.dataset.id));
+        var count = Number(select.value);
+        var blocked = table.rows.some(function (row) { return row.slice(count).some(function (cell) { return !!cell; }); });
+        if (blocked) {
+          select.value = String(table.columns);
+          note("Move the field out of the extra column first.");
+          return;
+        }
+        table.columns = count;
+        table.rows.forEach(function (row) {
+          while (row.length < count) row.push(null);
+          row.length = count;
+        });
+        note("");
+        paintCanvas();
+        paintPage();
+      });
+
+      var dragged = false;
+      var drag = null;
+      root.addEventListener("click", function (event) {
+        var codeButton = event.target.closest("[data-code]");
+        if (event.target.closest("[data-add-field]")) { openPopup("add"); return; }
+        if (codeButton) { openPopup(codeButton.dataset.code); return; }
+        var addRow = event.target.closest("[data-add-row]");
+        if (addRow) {
+          var table = findNode(Number(addRow.dataset.addRow));
+          var row = [];
+          for (var i = 0; i < table.columns; i++) row.push(null);
+          table.rows.push(row);
+          paintCanvas();
+          paintPage();
+          return;
+        }
+        var pick = event.target.closest("[data-pick]");
+        if (pick) {
+          var picked = state.lists[state.soort];
+          picked.picks[pick.dataset.pick] = picked.picks[pick.dataset.pick] === pick.dataset.value ? "" : pick.dataset.value;
+          paintSearch();
+          return;
+        }
+        var searchRemove = event.target.closest("[data-search-remove]");
+        if (searchRemove) {
+          var zone = searchRemove.dataset.zone;
+          var removeId = Number(searchRemove.dataset.searchRemove);
+          state.lists[state.soort][zone] = state.lists[state.soort][zone].filter(function (item) { return item.id !== removeId; });
+          note("");
+          render();
+          return;
+        }
+        var remove = event.target.closest("[data-remove]");
+        if (remove) { extract(Number(remove.dataset.remove)); render(); return; }
+        var chip = event.target.closest(".c5-chip");
+        if (!chip) return;
+        if (dragged) { dragged = false; return; }
+        if (state.tab === "search") {
+          note(chip.dataset.template === "field" ? "Drop it on Search for, Narrow with, or the list." : "Elements stay on Public and Management.");
+          return;
+        }
+        var node = createTemplate(chip.dataset.template, chip.dataset.key);
+        var reason = canPlace({ drop: "root", index: list().length }, node);
+        if (reason) { note(reason); return; }
+        place({ drop: "root", index: list().length }, node);
+        note("");
+        render();
+      });
+      root.addEventListener("dragstart", function (event) {
+        if (event.target.closest("input, textarea, select, button")) { event.preventDefault(); return; }
+        dragged = true;
+        var chip = event.target.closest(".c5-chip");
+        var block = event.target.closest("[data-id]");
+        if (chip) drag = { type: "template", template: chip.dataset.template, key: chip.dataset.key };
+        else if (block) drag = { type: "block", id: Number(block.dataset.id) };
+        else drag = null;
+        if (drag && event.dataTransfer) event.dataTransfer.setData("text/plain", drag.type);
+      });
+      root.addEventListener("dragover", function (event) {
+        if (!drag || !event.target.closest("[data-drop]")) return;
+        event.preventDefault();
+        event.target.closest("[data-drop]").classList.add("c5-over");
+      });
+      root.addEventListener("dragleave", function (event) {
+        var slot = event.target.closest("[data-drop]");
+        if (slot) slot.classList.remove("c5-over");
+      });
+      function placeOnSearch(zone) {
+        if (!drag || drag.type !== "template" || drag.template !== "field") {
+          note("Elements stay on Public and Management.");
+          return;
+        }
+        var field = fieldByKey(drag.key);
+        if (zone === "filter" && field.valueKind === "date") {
+          note(field.name + " is a date. A filter has to be text. It can still be a search box or a column.");
+          return;
+        }
+        var items = state.lists[state.soort][zone];
+        if (items.some(function (item) { return item.key === field.key; })) {
+          note(field.name + " is already on this part of the page.");
+          return;
+        }
+        items.push(makeField(field.key));
+        note("");
+        render();
+      }
+      root.addEventListener("drop", function (event) {
+        var slotNode = event.target.closest("[data-drop]");
+        if (!slotNode || !drag) return;
+        event.preventDefault();
+        slotNode.classList.remove("c5-over");
+        var zone = slotNode.dataset.drop;
+        if (zone === "zoek" || zone === "filter" || zone === "resultaat") {
+          placeOnSearch(zone);
+          drag = null;
+          return;
+        }
+        var slot = slotFrom(slotNode);
+        var node = drag.type === "template" ? createTemplate(drag.template, drag.key) : findNode(drag.id);
+        if (!node) { drag = null; return; }
+        if (drag.type === "block" && slot.drop !== "root" && contains(node, slot.id)) {
+          note("That element cannot go inside itself.");
+          drag = null;
+          return;
+        }
+        slot.movingId = node.id;
+        var reason = canPlace(slot, node);
+        if (reason) { note(reason); drag = null; return; }
+        var index = slot.index;
+        var from = -1;
+        if (drag.type === "block" && slot.drop === "root") from = list().findIndex(function (item) { return item.id === node.id; });
+        if (drag.type === "block") extract(node.id);
+        if (from >= 0 && from < index) index -= 1;
+        slot.index = index;
+        place(slot, node);
+        note("");
+        drag = null;
+        render();
+      });
+
+      render();
+      paintElements();
+    })();
+  </script>
+</div>
+
+</body>
+</html>
