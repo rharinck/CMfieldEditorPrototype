@@ -147,22 +147,36 @@
     #cm-detail-studio-5 .c5-slot { margin-top: 8px; min-height: 36px; padding: 6px; border: 1px dashed light-dark(#c9ddd9, #2c4544); border-radius: 6px; }
     #cm-detail-studio-5 table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     #cm-detail-studio-5 th, #cm-detail-studio-5 td { padding: 6px; border: 1px solid light-dark(#e4ddd0, #3a3834); text-align: left; vertical-align: top; font-weight: 400; }
-    #cm-detail-studio-5 .c5-page { border: 1px solid light-dark(#e4ddd0, #3a3834); border-radius: 8px; background: light-dark(#fff, #1c1b19); overflow: hidden; }
-    #cm-detail-studio-5 .c5-page table { margin: 0; }
-    #cm-detail-studio-5 .c5-page td, #cm-detail-studio-5 .c5-page th { border-color: light-dark(#e4ddd0, #3a3834); }
-    #cm-detail-studio-5 .c5-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; background: light-dark(#f7f4ee, #221f1c); border-bottom: 1px solid light-dark(#e4ddd0, #3a3834); }
-    #cm-detail-studio-5 .c5-text-btn { height: 26px; padding: 0 8px; border: 1px solid light-dark(#d9d1c4, #4a4742); border-radius: 6px; background: light-dark(#fff, #1c1b19); }
-    #cm-detail-studio-5 .c5-media { height: 48px; margin: 10px; border-radius: 6px; background: light-dark(#efeae1, #2c2926); display: flex; align-items: flex-end; padding: 8px; color: light-dark(#5c564c, #b7b0a4); font-size: 12px; }
-    #cm-detail-studio-5 .c5-detail { display: grid; grid-template-columns: minmax(0, 1fr) 88px; gap: 10px; padding: 10px; }
-    #cm-detail-studio-5 .c5-detail h4 { margin: 0 0 6px; font-size: 15px; font-weight: 500; }
-    #cm-detail-studio-5 .c5-slot-preview { display: flex; flex-direction: column; gap: 8px; }
-    #cm-detail-studio-5 .c5-line { margin: 0; }
-    #cm-detail-studio-5 .c5-atl-btn { align-self: flex-start; height: 28px; padding: 0 10px; border: 1px solid light-dark(#0f6e6e, #7ec8c4); border-radius: 6px; background: transparent; color: light-dark(#0c4f4f, #d5f3f1); }
-    #cm-detail-studio-5 .c5-place { padding: 8px; border-radius: 6px; background: light-dark(#f7f4ee, #221f1c); font-size: 12px; }
+    #cm-detail-studio-5 .c5-block.c5-insert { box-shadow: inset 0 2px 0 light-dark(#0e7c86, #7ec8c4); }
+    #cm-detail-studio-5 .c5-canvas.c5-insert-end { box-shadow: inset 0 -2px 0 light-dark(#0e7c86, #7ec8c4); }
+    #cm-detail-studio-5 .c5-page { border: 1px solid light-dark(#d5dde0, #3a454a); border-radius: 2px; background: light-dark(#f3f5f6, #1a2124); overflow: hidden; color: light-dark(#1c2b31, #e7eef0); }
+    #cm-detail-studio-5 .c5-record-bar, #cm-detail-studio-5 .c5-subbar, #cm-detail-studio-5 .c5-resultbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; }
+    #cm-detail-studio-5 .c5-record-bar { background: #0e4d5c; color: #fff; }
+    #cm-detail-studio-5 .c5-record-bar.c5-staff { background: #24323a; }
+    #cm-detail-studio-5 .c5-mark { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.85; }
+    #cm-detail-studio-5 .c5-crumb { font-size: 13px; }
+    #cm-detail-studio-5 .c5-record-bar .c5-chips { margin-left: auto; }
+    #cm-detail-studio-5 .c5-record-bar .c5-text-btn { border-color: rgba(255, 255, 255, 0.45); background: transparent; color: #fff; }
+    #cm-detail-studio-5 .c5-subbar, #cm-detail-studio-5 .c5-resultbar { background: light-dark(#fff, #243036); border-bottom: 1px solid light-dark(#d5dde0, #3a454a); font-size: 12px; color: light-dark(#5d6b72, #b7c4c8); }
+    #cm-detail-studio-5 .c5-resultbar { border-bottom: 0; border-top: 1px solid light-dark(#d5dde0, #3a454a); }
+    #cm-detail-studio-5 .c5-record-body { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 12px; padding: 12px; background: light-dark(#fff, #1c2428); }
+    #cm-detail-studio-5 .c5-record-title { margin: 0 0 4px; font-size: 20px; font-weight: 500; color: light-dark(#16323a, #f2f7f8); }
+    #cm-detail-studio-5 .c5-place { margin: 0 0 10px; font-size: 12px; color: light-dark(#5d6b72, #b7c4c8); }
+    #cm-detail-studio-5 .c5-fields { display: flex; flex-direction: column; }
+    #cm-detail-studio-5 .c5-meta-row { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 8px; padding: 7px 0; border-bottom: 1px solid light-dark(#e3e8ea, #314046); }
+    #cm-detail-studio-5 .c5-meta-label { color: light-dark(#5d6b72, #b7c4c8); font-size: 12px; }
+    #cm-detail-studio-5 .c5-meta-value { font-size: 14px; }
+    #cm-detail-studio-5 .c5-action { align-self: flex-start; margin-top: 10px; padding: 6px 10px; background: #0e7c86; color: #fff; border-radius: 2px; font-size: 13px; }
+    #cm-detail-studio-5 .c5-grid { display: grid; gap: 8px; margin-top: 8px; }
+    #cm-detail-studio-5 .c5-grid-cell { min-height: 28px; padding: 4px 0; }
+    #cm-detail-studio-5 .c5-viewer { min-height: 96px; background: light-dark(#e7ecee, #2a3438); display: flex; align-items: flex-end; padding: 8px; color: light-dark(#5d6b72, #b7c4c8); font-size: 12px; }
+    #cm-detail-studio-5 .c5-text-btn { height: 26px; padding: 0 8px; border: 1px solid light-dark(#d9d1c4, #4a4742); border-radius: 2px; background: light-dark(#fff, #1c1b19); }
     #cm-detail-studio-5 .c5-form, #cm-detail-studio-5 .c5-filters { display: flex; flex-direction: column; gap: 8px; padding: 10px; }
     #cm-detail-studio-5 .c5-query { height: 28px; width: 100%; box-sizing: border-box; border: 1px solid light-dark(#d9d1c4, #4a4742); border-radius: 6px; background: light-dark(#fff, #1c1b19); color: inherit; }
     #cm-detail-studio-5 .c5-search { padding: 12px; }
-    #cm-detail-studio-5 .c5-search-page { border: 1px solid light-dark(#e4ddd0, #3a3834); border-radius: 8px; background: light-dark(#fff, #1c1b19); }
+    #cm-detail-studio-5 .c5-search-page { border: 1px solid light-dark(#d5dde0, #3a454a); border-radius: 2px; background: light-dark(#fff, #1c2428); color: light-dark(#1c2b31, #e7eef0); }
+    #cm-detail-studio-5 .c5-search-page h3 { color: light-dark(#16323a, #f2f7f8); font-size: 13px; letter-spacing: 0.02em; }
+    #cm-detail-studio-5 .c5-hit { color: #0e7c86; }
     #cm-detail-studio-5 .c5-search-body { display: grid; grid-template-columns: minmax(140px, 200px) minmax(0, 1fr); }
     #cm-detail-studio-5 .c5-zone { padding: 10px; min-height: 88px; }
     #cm-detail-studio-5 .c5-search-body .c5-zone:first-child { border-right: 1px solid light-dark(#e4ddd0, #3a3834); }
@@ -183,7 +197,7 @@
       #cm-detail-studio-5 .c5-top, #cm-detail-studio-5 .c5-rail-head { flex-wrap: wrap; }
       #cm-detail-studio-5 .c5-work { grid-template-columns: 1fr; }
       #cm-detail-studio-5 .c5-stage { border-left: 0; border-top: 1px solid light-dark(#e4ddd0, #3a3834); }
-      #cm-detail-studio-5 .c5-detail { grid-template-columns: 1fr; }
+      #cm-detail-studio-5 .c5-record-body { grid-template-columns: 1fr; }
     }
   </style>
   <script>
@@ -394,11 +408,11 @@
         row.appendChild(remove);
         return row;
       }
-      function paintNode(item) {
-        var box = el("li", "c5-block");
+      function paintNode(item, nested) {
+        var box = el(nested ? "div" : "li", "c5-block");
+        box.draggable = true;
         box.dataset.id = String(item.id);
         if (item.kind === "field") {
-          box.draggable = true;
           var row = el("div", "c5-block-head");
           row.appendChild(fieldBody(item));
           var remove = el("button", "", "Remove");
@@ -430,7 +444,7 @@
           var slot = el("div", "c5-slot");
           slot.dataset.drop = "button";
           slot.dataset.id = String(item.id);
-          if (item.children.length) slot.appendChild(paintNode(item.children[0]));
+          if (item.children.length) slot.appendChild(paintNode(item.children[0], true));
           else slot.appendChild(el("p", "c5-hint", "Drop a CM field to use it as the label."));
           box.appendChild(slot);
           return box;
@@ -463,8 +477,8 @@
             td.dataset.id = String(item.id);
             td.dataset.row = String(r);
             td.dataset.col = String(c);
-            if (cell) td.appendChild(paintNode(cell));
-            else td.appendChild(el("p", "c5-hint", "Drop a field"));
+            if (cell) td.appendChild(paintNode(cell, true));
+            else td.appendChild(el("p", "c5-hint", "Drop a field or a button"));
             tr.appendChild(td);
           });
           table.appendChild(tr);
@@ -477,28 +491,28 @@
         if (!item) return;
         if (item.kind === "field") {
           var source = fieldByKey(item.key);
-          parent.appendChild(el("p", "c5-line", source.name + "  " + (rec[item.key] || "")));
-          parent.appendChild(el("p", "c5-path", pathOf(source.code)));
+          var row = el("div", "c5-meta-row");
+          row.appendChild(el("div", "c5-meta-label", source.name));
+          row.appendChild(el("div", "c5-meta-value", rec[item.key] || "—"));
+          parent.appendChild(row);
           return;
         }
         if (item.kind === "button") {
           var text = item.label || "Request a copy";
           if (item.children[0] && item.children[0].kind === "field") text = rec[item.children[0].key] || fieldByKey(item.children[0].key).name;
-          parent.appendChild(el("span", "c5-atl-btn", text));
-          parent.appendChild(el("p", "c5-path", "href " + (item.href || "")));
+          parent.appendChild(el("span", "c5-action", text));
           return;
         }
-        var table = document.createElement("table");
+        var grid = el("div", "c5-grid");
+        grid.style.gridTemplateColumns = "repeat(" + item.columns + ", minmax(0, 1fr))";
         item.rows.forEach(function (row) {
-          var tr = document.createElement("tr");
           row.forEach(function (cell) {
-            var td = document.createElement("td");
-            if (cell) renderPreviewNode(td, cell, rec);
-            tr.appendChild(td);
+            var cellNode = el("div", "c5-grid-cell");
+            if (cell) renderPreviewNode(cellNode, cell, rec);
+            grid.appendChild(cellNode);
           });
-          table.appendChild(tr);
         });
-        parent.appendChild(table);
+        parent.appendChild(grid);
       }
       function actions(bar, labels) {
         var wrap = el("div", "c5-chips");
@@ -506,24 +520,26 @@
         bar.appendChild(wrap);
       }
       function detailPage(page, rec, audience, actionLabels) {
-        var bar = el("div", "c5-bar");
-        bar.appendChild(el("strong", "", rec.title));
+        var soortLabel = state.soort === "archiefstukken" ? "Archiefstukken" : "Objecten";
+        var bar = el("header", "c5-record-bar" + (audience === "management" ? " c5-staff" : ""));
+        bar.appendChild(el("span", "c5-mark", "Atlantis"));
+        bar.appendChild(el("span", "c5-crumb", soortLabel));
         actions(bar, actionLabels);
         page.appendChild(bar);
-        page.appendChild(el("div", "c5-media", "Media · " + rec.files));
-        if (audience === "management") page.appendChild(el("div", "c5-bar", rec.page));
-        var detail = el("div", "c5-detail");
-        var main = el("div", "");
-        main.appendChild(el("h4", "", rec.title));
-        var slot = el("div", "c5-slot-preview");
+        if (audience === "management") page.appendChild(el("div", "c5-subbar", rec.page));
+        var body = el("div", "c5-record-body");
+        var main = el("div", "c5-meta");
+        main.appendChild(el("h4", "c5-record-title", rec.title));
+        main.appendChild(el("p", "c5-place", rec.place));
+        var slot = el("div", "c5-fields");
         var items = state.lists[state.soort][audience];
-        if (!items.length) slot.appendChild(el("p", "c5-hint", "The detail slot is empty."));
+        if (!items.length) slot.appendChild(el("p", "c5-hint", "Nothing on this detail yet."));
         items.forEach(function (item) { renderPreviewNode(slot, item, rec); });
         main.appendChild(slot);
-        detail.appendChild(main);
-        detail.appendChild(el("div", "c5-place", "Location " + rec.place));
-        page.appendChild(detail);
-        if (audience === "management") page.appendChild(el("div", "c5-bar", rec.result));
+        body.appendChild(main);
+        body.appendChild(el("div", "c5-viewer", rec.files));
+        page.appendChild(body);
+        if (audience === "management") page.appendChild(el("footer", "c5-resultbar", rec.result));
       }
       function searchPage(page) {
         var form = el("div", "c5-form");
@@ -708,7 +724,9 @@
         table.appendChild(head);
         ordered.forEach(function (hit) {
           var row = document.createElement("tr");
-          columns.forEach(function (item) { row.appendChild(el("td", "", hit[item.key] || "")); });
+          columns.forEach(function (item, columnIndex) {
+            row.appendChild(el("td", columnIndex === 0 ? "c5-hit" : "", hit[item.key] || ""));
+          });
           table.appendChild(row);
         });
         result.appendChild(table);
@@ -735,13 +753,29 @@
       function slotFrom(target) {
         var nested = target.closest("[data-drop]");
         if (!nested) return null;
-        return { drop: nested.dataset.drop, id: Number(nested.dataset.id), row: Number(nested.dataset.row), col: Number(nested.dataset.col), index: indexBefore(target) };
+        return { drop: nested.dataset.drop, id: Number(nested.dataset.id), row: Number(nested.dataset.row), col: Number(nested.dataset.col), index: 0 };
       }
-      function indexBefore(target) {
-        var block = target.closest(".c5-canvas > .c5-block");
-        if (!block) return list().length;
-        var index = list().findIndex(function (item) { return String(item.id) === block.dataset.id; });
-        return index < 0 ? list().length : index;
+      function rootIndex(event) {
+        var blocks = root.querySelectorAll("#c5-canvas > .c5-block");
+        for (var i = 0; i < blocks.length; i++) {
+          var rect = blocks[i].getBoundingClientRect();
+          if (event.clientY < rect.top + rect.height / 2) return i;
+        }
+        return blocks.length;
+      }
+      function clearMarks() {
+        root.querySelectorAll(".c5-over, .c5-insert, .c5-insert-end").forEach(function (node) {
+          node.classList.remove("c5-over", "c5-insert", "c5-insert-end");
+        });
+      }
+      function markInsert(event) {
+        root.querySelectorAll(".c5-insert, .c5-insert-end").forEach(function (node) {
+          node.classList.remove("c5-insert", "c5-insert-end");
+        });
+        var index = rootIndex(event);
+        var blocks = root.querySelectorAll("#c5-canvas > .c5-block");
+        if (index < blocks.length) blocks[index].classList.add("c5-insert");
+        else root.querySelector("#c5-canvas").classList.add("c5-insert-end");
       }
 
       root.querySelector("#c5-soort").addEventListener("change", function (event) {
@@ -836,6 +870,7 @@
       var dragged = false;
       var drag = null;
       root.addEventListener("click", function (event) {
+        if (dragged) { dragged = false; return; }
         var codeButton = event.target.closest("[data-code]");
         if (event.target.closest("[data-add-field]")) { openPopup("add"); return; }
         if (codeButton) { openPopup(codeButton.dataset.code); return; }
@@ -869,7 +904,6 @@
         if (remove) { extract(Number(remove.dataset.remove)); render(); return; }
         var chip = event.target.closest(".c5-chip");
         if (!chip) return;
-        if (dragged) { dragged = false; return; }
         if (state.tab === "search") {
           note(chip.dataset.template === "field" ? "Drop it on Search for, Narrow with, or the list." : "Elements stay on Public and Management.");
           return;
@@ -892,20 +926,31 @@
         if (drag && event.dataTransfer) event.dataTransfer.setData("text/plain", drag.type);
       });
       root.addEventListener("dragover", function (event) {
-        if (!drag || !event.target.closest("[data-drop]")) return;
+        var slotNode = event.target.closest("[data-drop]");
+        if (!drag || !slotNode) return;
         event.preventDefault();
-        event.target.closest("[data-drop]").classList.add("c5-over");
+        if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+        clearMarks();
+        slotNode.classList.add("c5-over");
+        if (slotNode.dataset.drop === "root") markInsert(event);
       });
-      root.addEventListener("dragleave", function (event) {
-        var slot = event.target.closest("[data-drop]");
-        if (slot) slot.classList.remove("c5-over");
+      root.addEventListener("dragend", function () {
+        clearMarks();
+        setTimeout(function () { drag = null; dragged = false; }, 0);
       });
+      function draggedFieldKey() {
+        if (!drag) return "";
+        if (drag.type === "template") return drag.template === "field" ? drag.key : "";
+        var node = findNode(drag.id);
+        return node && node.kind === "field" ? node.key : "";
+      }
       function placeOnSearch(zone) {
-        if (!drag || drag.type !== "template" || drag.template !== "field") {
+        var key = draggedFieldKey();
+        if (!key) {
           note("Elements stay on Public and Management.");
           return;
         }
-        var field = fieldByKey(drag.key);
+        var field = fieldByKey(key);
         if (zone === "filter" && field.valueKind === "date") {
           note(field.name + " is a date. A filter has to be text. It can still be a search box or a column.");
           return;
@@ -923,7 +968,7 @@
         var slotNode = event.target.closest("[data-drop]");
         if (!slotNode || !drag) return;
         event.preventDefault();
-        slotNode.classList.remove("c5-over");
+        clearMarks();
         var zone = slotNode.dataset.drop;
         if (zone === "zoek" || zone === "filter" || zone === "resultaat") {
           placeOnSearch(zone);
@@ -941,7 +986,7 @@
         slot.movingId = node.id;
         var reason = canPlace(slot, node);
         if (reason) { note(reason); drag = null; return; }
-        var index = slot.index;
+        var index = slot.drop === "root" ? rootIndex(event) : slot.index;
         var from = -1;
         if (drag.type === "block" && slot.drop === "root") from = list().findIndex(function (item) { return item.id === node.id; });
         if (drag.type === "block") extract(node.id);
