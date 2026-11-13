@@ -52,7 +52,10 @@
 
     <div class="c5-work">
       <div class="c5-canvas-wrap">
-        <h3 id="c5-canvas-title">Public</h3>
+        <div class="c5-canvas-head">
+          <h3 id="c5-canvas-title">Public</h3>
+          <button type="button" class="c5-ghost" id="c5-detail-code">Code</button>
+        </div>
         <ol class="c5-canvas" id="c5-canvas" data-drop="root" aria-label="Composition"></ol>
         <p class="c5-empty" id="c5-empty" hidden>Drag a CM field here.</p>
       </div>
@@ -88,12 +91,13 @@
     <div class="c5-modal" id="c5-modal" hidden>
       <div class="c5-dialog" role="dialog" aria-modal="true" aria-labelledby="c5-dialog-title">
         <h3 id="c5-dialog-title">Add CM field</h3>
-        <label class="c5-label">Name
+        <label class="c5-label" id="c5-name-label">Name
           <input class="c5-input" id="c5-field-name" maxlength="20" />
         </label>
-        <label class="c5-label">Expression
+        <label class="c5-label" id="c5-expr-label"><span id="c5-expr-caption">Expression</span>
           <textarea class="c5-code" id="c5-code" rows="5" spellcheck="false"></textarea>
         </label>
+        <p class="c5-hint" id="c5-code-hint" hidden>Apply replaces this detail with the HTML below.</p>
         <p class="c5-error" id="c5-code-error" hidden></p>
         <div class="c5-editor-actions">
           <button type="button" class="c5-ghost" id="c5-close-code">Cancel</button>
@@ -138,6 +142,18 @@
     #cm-detail-studio-5 .c5-tab[aria-selected="true"] { background: light-dark(#f4f1ea, #1c1b19); border-color: light-dark(#e4ddd0, #3a3834); }
     #cm-detail-studio-5 .c5-work { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); background: light-dark(#f4f1ea, #1c1b19); }
     #cm-detail-studio-5 .c5-canvas-wrap, #cm-detail-studio-5 .c5-stage { padding: 12px; }
+    #cm-detail-studio-5 .c5-canvas-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+    #cm-detail-studio-5 .c5-canvas-head h3 { margin: 0; }
+    #cm-detail-studio-5 .c5-modal.c5-wide .c5-dialog { width: min(680px, 100%); }
+    #cm-detail-studio-5 .c5-block .c5-code { margin-top: 8px; }
+    #cm-detail-studio-5 .c5-block > .c5-label .c5-mini, #cm-detail-studio-5 .c5-block th .c5-mini { width: 100%; }
+    #cm-detail-studio-5 .c5-detail-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    #cm-detail-studio-5 .c5-detail-table th { font-size: 12px; font-weight: 500; color: light-dark(#5d6b72, #b7c4c8); }
+    #cm-detail-studio-5 .c5-look-columns th, #cm-detail-studio-5 .c5-look-columns td { border-bottom: 1px solid light-dark(#e3e8ea, #314046); }
+    #cm-detail-studio-5 .c5-look-plain th, #cm-detail-studio-5 .c5-look-plain td, #cm-detail-studio-5 .c5-look-custom, #cm-detail-studio-5 .c5-look-custom th, #cm-detail-studio-5 .c5-look-custom td { border: 0; }
+    #cm-detail-studio-5 .c5-pair { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 6px; align-items: baseline; }
+    #cm-detail-studio-5 .c5-raw { margin: 8px 0; white-space: pre-wrap; }
+    #cm-detail-studio-5 .c5-snippet { margin: 8px 0; }
     #cm-detail-studio-5 .c5-stage { border-left: 1px solid light-dark(#e4ddd0, #3a3834); }
     #cm-detail-studio-5 .c5-canvas { list-style: none; margin: 0; padding: 0; min-height: 160px; display: flex; flex-direction: column; gap: 8px; }
     #cm-detail-studio-5 .c5-over { outline: 1px dashed light-dark(#0f6e6e, #7ec8c4); outline-offset: 3px; }
@@ -205,7 +221,9 @@
       var root = document.getElementById("cm-detail-studio-5");
       var elementCatalog = [
         { kind: "button", name: "Button", tag: "atl-button", note: "Registered. Attribute: href. Label is nested content." },
-        { kind: "table", name: "Table", tag: "table", note: "Container. Attribute: columns. Drop fields or a button into cells." }
+        { kind: "text", name: "Text", tag: "text", note: "Raw text on the detail page." },
+        { kind: "html", name: "HTML", tag: "html", note: "Your own HTML snippet." },
+        { kind: "table", name: "Table", tag: "table", note: "Column labels. Style: columns, pairs, plain, or custom CSS." }
       ];
       var tabs = ["public", "management", "search"];
       var detailTabs = { public: true, management: true };
@@ -235,11 +253,14 @@
       function emptyLists() { return { public: [], management: [], zoek: [], resultaat: [], filter: [], sortKey: "date", queries: {}, picks: {} }; }
       function makeField(key) { return { id: state.nextId++, kind: "field", key: key }; }
       function makeButton() { return { id: state.nextId++, kind: "button", href: "/request", label: "Request a copy", children: [] }; }
-      function makeTable() { return { id: state.nextId++, kind: "table", columns: 2, rows: [[null, null]] }; }
+      function makeText() { return { id: state.nextId++, kind: "text", text: "" }; }
+      function makeHtml() { return { id: state.nextId++, kind: "html", html: "" }; }
+      function makeTable() { return { id: state.nextId++, kind: "table", columns: 2, look: "columns", customStyle: "", labels: ["", ""], rows: [[null, null]] }; }
       function pushField(soort, tab, key) { state.lists[soort][tab].push(makeField(key)); }
 
       pushField("objecten", "public", "title");
       var objectTable = makeTable();
+      objectTable.labels = ["Vervaardiger", "Datering"];
       objectTable.rows[0][0] = makeField("maker");
       objectTable.rows[0][1] = makeField("date");
       state.lists.objecten.public.push(objectTable);
@@ -254,6 +275,7 @@
       pushField("objecten", "filter", "maker");
       pushField("archiefstukken", "public", "title");
       var archiveTable = makeTable();
+      archiveTable.labels = ["Datering", "Omvang"];
       archiveTable.rows[0][0] = makeField("date");
       archiveTable.rows[0][1] = makeField("extent");
       state.lists.archiefstukken.public.push(archiveTable);
@@ -267,21 +289,31 @@
       function openPopup(mode) {
         state.popup = mode;
         var adding = mode === "add";
-        var field = adding ? null : fieldByKey(mode);
+        var detail = mode === "detail";
+        var field = adding || detail ? null : fieldByKey(mode);
         var table = state.soort === "archiefstukken" ? "FRM_ARCHIEFSTUKKEN" : "FRM_OBJECTEN";
-        root.querySelector("#c5-modal").hidden = false;
-        root.querySelector("#c5-dialog-title").textContent = adding ? "Add CM field" : "Edit expression";
-        root.querySelector("#c5-apply").textContent = adding ? "Add field" : "Apply code";
+        var modal = root.querySelector("#c5-modal");
+        modal.hidden = false;
+        modal.classList.toggle("c5-wide", detail);
+        root.querySelector("#c5-dialog-title").textContent = detail ? "Detail HTML" : adding ? "Add CM field" : "Edit expression";
+        root.querySelector("#c5-apply").textContent = detail ? "Apply HTML" : adding ? "Add field" : "Apply code";
+        root.querySelector("#c5-name-label").hidden = detail;
+        root.querySelector("#c5-expr-caption").textContent = detail ? "HTML" : "Expression";
+        root.querySelector("#c5-code-hint").hidden = !detail;
         var name = root.querySelector("#c5-field-name");
         name.disabled = !adding;
         name.value = field ? field.name : "";
-        root.querySelector("#c5-code").value = field ? field.code : '<xsl:value-of select="DATABASE/XMLDOCUMENT/' + table + '/"/>';
+        var code = root.querySelector("#c5-code");
+        code.rows = detail ? 12 : 5;
+        code.value = detail ? detailSource() : field ? field.code : '<xsl:value-of select="DATABASE/XMLDOCUMENT/' + table + '/"/>';
         root.querySelector("#c5-code-error").hidden = true;
-        (adding ? name : root.querySelector("#c5-code")).focus();
+        (adding ? name : code).focus();
       }
       function closePopup() {
         state.popup = "";
-        root.querySelector("#c5-modal").hidden = true;
+        var modal = root.querySelector("#c5-modal");
+        modal.hidden = true;
+        modal.classList.remove("c5-wide");
       }
       function current() { return soorten[state.soort]; }
       function list() { return state.lists[state.soort][state.tab]; }
@@ -449,6 +481,18 @@
           box.appendChild(slot);
           return box;
         }
+        if (item.kind === "text" || item.kind === "html") {
+          box.appendChild(head(item, item.kind === "html" ? "HTML" : "Text"));
+          var area = el("textarea", "c5-code");
+          area.rows = 3;
+          area.spellcheck = false;
+          area.value = item.kind === "html" ? item.html : item.text;
+          area.dataset.attr = item.kind === "html" ? "html" : "text";
+          area.dataset.id = String(item.id);
+          area.setAttribute("aria-label", item.kind === "html" ? "HTML snippet" : "Text");
+          box.appendChild(area);
+          return box;
+        }
         box.appendChild(head(item, "Table"));
         var attrs = el("div", "c5-attrs");
         var columns = el("label", "c5-label", "columns");
@@ -462,13 +506,48 @@
           select.appendChild(option);
         });
         columns.appendChild(select);
+        var lookLabel = el("label", "c5-label", "style");
+        var look = el("select", "c5-mini");
+        look.dataset.attr = "look";
+        look.dataset.id = String(item.id);
+        [["columns", "Columns"], ["pairs", "Pairs"], ["plain", "Plain"], ["custom", "Custom"]].forEach(function (pair) {
+          var option = el("option", "", pair[1]);
+          option.value = pair[0];
+          if (pair[0] === (item.look || "columns")) option.selected = true;
+          look.appendChild(option);
+        });
+        lookLabel.appendChild(look);
         var add = el("button", "c5-linkish", "Add row");
         add.type = "button";
         add.dataset.addRow = String(item.id);
         attrs.appendChild(columns);
+        attrs.appendChild(lookLabel);
         attrs.appendChild(add);
         box.appendChild(attrs);
+        if (item.look === "custom") {
+          var custom = el("label", "c5-label", "custom CSS");
+          var customInput = el("input", "c5-mini");
+          customInput.value = item.customStyle || "";
+          customInput.placeholder = "background: #f4efe6; border: 0";
+          customInput.dataset.attr = "customStyle";
+          customInput.dataset.id = String(item.id);
+          custom.appendChild(customInput);
+          box.appendChild(custom);
+        }
         var table = document.createElement("table");
+        var labels = document.createElement("tr");
+        for (var c = 0; c < item.columns; c++) {
+          var th = document.createElement("th");
+          var labelInput = el("input", "c5-mini");
+          labelInput.value = (item.labels && item.labels[c]) || "";
+          labelInput.placeholder = "Label";
+          labelInput.dataset.id = String(item.id);
+          labelInput.dataset.colLabel = String(c);
+          labelInput.setAttribute("aria-label", "Column " + (c + 1) + " label");
+          th.appendChild(labelInput);
+          labels.appendChild(th);
+        }
+        table.appendChild(labels);
         item.rows.forEach(function (row, r) {
           var tr = document.createElement("tr");
           row.forEach(function (cell, c) {
@@ -478,7 +557,7 @@
             td.dataset.row = String(r);
             td.dataset.col = String(c);
             if (cell) td.appendChild(paintNode(cell, true));
-            else td.appendChild(el("p", "c5-hint", "Drop a field or a button"));
+            else td.appendChild(el("p", "c5-hint", "Drop a field, text, or HTML"));
             tr.appendChild(td);
           });
           table.appendChild(tr);
@@ -503,16 +582,87 @@
           parent.appendChild(el("span", "c5-action", text));
           return;
         }
-        var grid = el("div", "c5-grid");
-        grid.style.gridTemplateColumns = "repeat(" + item.columns + ", minmax(0, 1fr))";
+        if (item.kind === "text") {
+          parent.appendChild(el("p", "c5-raw", item.text || ""));
+          return;
+        }
+        if (item.kind === "html") {
+          var snippet = el("div", "c5-snippet");
+          snippet.innerHTML = item.html || "";
+          parent.appendChild(snippet);
+          return;
+        }
+        var table = document.createElement("table");
+        table.className = "c5-detail-table c5-look-" + (item.look || "columns");
+        if (item.look === "custom" && item.customStyle) table.style.cssText = item.customStyle;
+        var showHead = item.look !== "plain" && item.look !== "pairs";
+        if (showHead) {
+          var headRow = document.createElement("tr");
+          for (var c = 0; c < item.columns; c++) headRow.appendChild(el("th", "", (item.labels && item.labels[c]) || ""));
+          table.appendChild(headRow);
+        }
         item.rows.forEach(function (row) {
-          row.forEach(function (cell) {
-            var cellNode = el("div", "c5-grid-cell");
-            if (cell) renderPreviewNode(cellNode, cell, rec);
-            grid.appendChild(cellNode);
+          var tr = document.createElement("tr");
+          row.forEach(function (cell, index) {
+            var td = document.createElement("td");
+            if (item.look === "pairs") {
+              var pair = el("div", "c5-pair");
+              pair.appendChild(el("div", "c5-meta-label", (item.labels && item.labels[index]) || ""));
+              var value = el("div", "");
+              if (cell) renderCellValue(value, cell, rec);
+              pair.appendChild(value);
+              td.appendChild(pair);
+            } else if (cell) renderCellValue(td, cell, rec);
+            tr.appendChild(td);
           });
+          table.appendChild(tr);
         });
-        parent.appendChild(grid);
+        parent.appendChild(table);
+      }
+      function renderCellValue(parent, item, rec) {
+        if (item.kind === "field") {
+          parent.appendChild(document.createTextNode(rec[item.key] || "—"));
+          return;
+        }
+        renderPreviewNode(parent, item, rec);
+      }
+      function esc(text) {
+        return String(text || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+      function nodeHtml(item) {
+        if (!item) return "";
+        if (item.kind === "field") {
+          var source = fieldByKey(item.key);
+          return '<div class="field"><span class="label">' + esc(source.name) + "</span><span class=\"value\">" + source.code + "</span></div>";
+        }
+        if (item.kind === "text") return "<p>" + esc(item.text) + "</p>";
+        if (item.kind === "html") return item.html || "";
+        if (item.kind === "button") {
+          var label = item.label || "Request a copy";
+          if (item.children[0] && item.children[0].kind === "field") label = fieldByKey(item.children[0].key).name;
+          return '<a class="action" href="' + esc(item.href) + '">' + esc(label) + "</a>";
+        }
+        var html = '<table class="look-' + esc(item.look || "columns") + '"';
+        if (item.look === "custom" && item.customStyle) html += ' style="' + esc(item.customStyle) + '"';
+        html += ">";
+        if (item.look !== "plain" && item.look !== "pairs") {
+          html += "<tr>" + (item.labels || []).map(function (label) { return "<th>" + esc(label) + "</th>"; }).join("") + "</tr>";
+        }
+        item.rows.forEach(function (row) {
+          html += "<tr>";
+          row.forEach(function (cell, index) {
+            var inner = cell && cell.kind === "field" && item.look !== "plain" ? fieldByKey(cell.key).code : nodeHtml(cell);
+            if (item.look === "pairs") inner = '<span class="label">' + esc(item.labels[index] || "") + "</span>" + inner;
+            html += "<td>" + inner + "</td>";
+          });
+          html += "</tr>";
+        });
+        return html + "</table>";
+      }
+      function detailSource() {
+        var items = list();
+        if (items.length === 1 && items[0].kind === "html") return items[0].html;
+        return items.map(nodeHtml).join("\n");
       }
       function actions(bar, labels) {
         var wrap = el("div", "c5-chips");
@@ -748,6 +898,8 @@
       function createTemplate(template, key) {
         if (template === "field") return makeField(key);
         if (template === "button") return makeButton();
+        if (template === "text") return makeText();
+        if (template === "html") return makeHtml();
         return makeTable();
       }
       function slotFrom(target) {
@@ -799,6 +951,23 @@
         var error = root.querySelector("#c5-code-error");
         var name = nameInput.value.trim();
         function fail(message) { error.hidden = false; error.textContent = message; }
+        if (state.popup === "detail") {
+          var items = state.lists[state.soort][state.tab];
+          if (!code) {
+            state.lists[state.soort][state.tab] = [];
+            note("Detail cleared.");
+          } else if (items.length === 1 && items[0].kind === "html") {
+            items[0].html = code;
+            note("Detail HTML updated.");
+          } else if (code !== detailSource().trim()) {
+            state.lists[state.soort][state.tab] = [{ id: state.nextId++, kind: "html", html: code }];
+            note("This detail is now custom HTML. Remove that block to build it from fields again.");
+          }
+          error.hidden = true;
+          closePopup();
+          render();
+          return;
+        }
         if (!code) { fail("Enter the expression."); return; }
         if (state.popup === "add") {
           if (!name) { fail("Enter a name."); return; }
@@ -839,14 +1008,32 @@
       });
       root.querySelector("#c5-field-name").addEventListener("input", function () { root.querySelector("#c5-code-error").hidden = true; });
       root.addEventListener("input", function (event) {
+        var labeled = event.target.closest("[data-col-label]");
+        if (labeled) {
+          var labeledTable = findNode(Number(labeled.dataset.id));
+          if (!labeledTable) return;
+          labeledTable.labels[Number(labeled.dataset.colLabel)] = labeled.value;
+          paintPage();
+          return;
+        }
         var input = event.target.closest("[data-attr]");
-        if (!input || input.dataset.attr === "columns") return;
+        if (!input || input.dataset.attr === "columns" || input.dataset.attr === "look") return;
         var node = findNode(Number(input.dataset.id));
         if (!node) return;
         node[input.dataset.attr] = input.value;
         paintPage();
       });
       root.addEventListener("change", function (event) {
+        var look = event.target.closest("[data-attr='look']");
+        if (look) {
+          var styled = findNode(Number(look.dataset.id));
+          if (!styled) return;
+          styled.look = look.value;
+          note("");
+          paintCanvas();
+          paintPage();
+          return;
+        }
         var select = event.target.closest("[data-attr='columns']");
         if (!select) return;
         var table = findNode(Number(select.dataset.id));
@@ -858,6 +1045,8 @@
           return;
         }
         table.columns = count;
+        while (table.labels.length < count) table.labels.push("");
+        table.labels.length = count;
         table.rows.forEach(function (row) {
           while (row.length < count) row.push(null);
           row.length = count;
@@ -873,6 +1062,7 @@
         if (dragged) { dragged = false; return; }
         var codeButton = event.target.closest("[data-code]");
         if (event.target.closest("[data-add-field]")) { openPopup("add"); return; }
+        if (event.target.closest("#c5-detail-code")) { openPopup("detail"); return; }
         if (codeButton) { openPopup(codeButton.dataset.code); return; }
         var addRow = event.target.closest("[data-add-row]");
         if (addRow) {
