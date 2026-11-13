@@ -182,7 +182,7 @@
     #cm-detail-studio-5 .c5-meta-row { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 8px; padding: 7px 0; border-bottom: 1px solid light-dark(#e3e8ea, #314046); }
     #cm-detail-studio-5 .c5-meta-label { color: light-dark(#5d6b72, #b7c4c8); font-size: 12px; }
     #cm-detail-studio-5 .c5-meta-value { font-size: 14px; }
-    #cm-detail-studio-5 .c5-action { align-self: flex-start; margin-top: 10px; padding: 6px 10px; background: #0e7c86; color: #fff; border-radius: 2px; font-size: 13px; }
+    #cm-detail-studio-5 atl-button { display: inline-block; align-self: flex-start; margin-top: 10px; padding: 6px 10px; background: #0e7c86; color: #fff; border-radius: 2px; font-size: 13px; }
     #cm-detail-studio-5 .c5-grid { display: grid; gap: 8px; margin-top: 8px; }
     #cm-detail-studio-5 .c5-grid-cell { min-height: 28px; padding: 4px 0; }
     #cm-detail-studio-5 .c5-viewer { min-height: 96px; background: light-dark(#e7ecee, #2a3438); display: flex; align-items: flex-end; padding: 8px; color: light-dark(#5d6b72, #b7c4c8); font-size: 12px; }
@@ -220,7 +220,7 @@
     (function () {
       var root = document.getElementById("cm-detail-studio-5");
       var elementCatalog = [
-        { kind: "button", name: "Button", tag: "atl-button", note: "Registered. Attribute: href. Label is nested content." },
+        { kind: "button", name: "Button", tag: "atl-button", note: "href, and a label. Drop a CM field in to use that as the label." },
         { kind: "text", name: "Text", tag: "text", note: "Raw text on the detail page." },
         { kind: "html", name: "HTML", tag: "html", note: "Your own HTML snippet." },
         { kind: "table", name: "Table", tag: "table", note: "Column labels. Style: columns, pairs, plain, or custom CSS." }
@@ -579,7 +579,10 @@
         if (item.kind === "button") {
           var text = item.label || "Request a copy";
           if (item.children[0] && item.children[0].kind === "field") text = rec[item.children[0].key] || fieldByKey(item.children[0].key).name;
-          parent.appendChild(el("span", "c5-action", text));
+          var button = document.createElement("atl-button");
+          button.setAttribute("href", item.href || "");
+          button.textContent = text;
+          parent.appendChild(button);
           return;
         }
         if (item.kind === "text") {
@@ -588,7 +591,7 @@
         }
         if (item.kind === "html") {
           var snippet = el("div", "c5-snippet");
-          snippet.innerHTML = item.html || "";
+          snippet.innerHTML = String(item.html || "").replace(/<(atl-[\w-]+)([^>]*)\/>/gi, "<$1$2></$1>");
           parent.appendChild(snippet);
           return;
         }
@@ -638,9 +641,9 @@
         if (item.kind === "text") return "<p>" + esc(item.text) + "</p>";
         if (item.kind === "html") return item.html || "";
         if (item.kind === "button") {
-          var label = item.label || "Request a copy";
-          if (item.children[0] && item.children[0].kind === "field") label = fieldByKey(item.children[0].key).name;
-          return '<a class="action" href="' + esc(item.href) + '">' + esc(label) + "</a>";
+          var inner = esc(item.label || "Request a copy");
+          if (item.children[0] && item.children[0].kind === "field") inner = fieldByKey(item.children[0].key).code;
+          return '<atl-button href="' + esc(item.href) + '">' + inner + "</atl-button>";
         }
         var html = '<table class="look-' + esc(item.look || "columns") + '"';
         if (item.look === "custom" && item.customStyle) html += ' style="' + esc(item.customStyle) + '"';
